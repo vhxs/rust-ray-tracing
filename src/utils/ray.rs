@@ -16,7 +16,7 @@ impl Ray {
 }
 
 pub fn ray_color(ray: &Ray) -> Color {
-    if hit_sphere(
+    let t = hit_sphere(
         &Point3 {
             x: 0.,
             y: 0.,
@@ -24,12 +24,21 @@ pub fn ray_color(ray: &Ray) -> Color {
         },
         &0.5,
         &ray,
-    ) {
+    );
+
+    if t > 0. {
+        let vector = ray.at(t)
+            - Vec3 {
+                x: 0.,
+                y: 0.,
+                z: -1.,
+            };
+        let normal = unit_vector(&vector);
         return Color {
-            x: 1.,
-            y: 0.,
-            z: 0.,
-        };
+            x: normal.x + 1.,
+            y: normal.y + 1.,
+            z: normal.z + 1.,
+        } * 0.5;
     }
 
     let unit_direction = unit_vector(&ray.direction);
