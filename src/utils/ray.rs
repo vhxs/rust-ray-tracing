@@ -3,6 +3,7 @@ use core::f64;
 use super::color::Color;
 use super::hittable::HitRecord;
 use super::hittable::Hittable;
+use super::interval::Interval;
 use super::point3::Point3;
 use super::vec3::Vec3;
 
@@ -19,7 +20,11 @@ impl Ray {
 
 pub fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
     let mut hit_record = HitRecord::default();
-    if world.hit(ray, &0., &f64::INFINITY, &mut hit_record) {
+    let interval = Interval {
+        min: 0.,
+        max: f64::INFINITY,
+    };
+    if world.hit(ray, interval, &mut hit_record) {
         return (hit_record.normal
             + Color {
                 x: 1.,

@@ -1,3 +1,4 @@
+use super::interval::Interval;
 use super::{point3::Point3, ray::Ray, vec3::Vec3};
 
 #[derive(Copy, Clone, Default)]
@@ -9,7 +10,7 @@ pub struct HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, ray: &Ray, ray_tmin: &f64, ray_tmax: &f64, hit_record: &mut HitRecord) -> bool;
+    fn hit(&self, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool;
 }
 
 impl HitRecord {
@@ -39,13 +40,17 @@ impl<'a, T: Hittable> HittableList<'a, T> {
 }
 
 impl<'a, T: Hittable> Hittable for HittableList<'a, T> {
-    fn hit(&self, ray: &Ray, ray_tmin: &f64, ray_tmax: &f64, hit_record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool {
         let mut some_record = HitRecord::default();
         let mut hit_anything = false;
-        let mut closest_so_far = *ray_tmax;
+        let mut closest_so_far = ray_t.max;
 
         for object in &self.objects {
-            if object.hit(ray, ray_tmin, &closest_so_far, &mut some_record) {
+            let interval = Interval {
+                min: ray_t.min,
+                max: closest_so_far,
+            };
+            if object.hit(ray, interval, &mut some_record) {
                 hit_anything = true;
                 closest_so_far = some_record.t;
                 *hit_record = some_record.clone();

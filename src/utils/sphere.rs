@@ -1,4 +1,5 @@
 use super::hittable::{HitRecord, Hittable};
+use super::interval::Interval;
 use super::point3::Point3;
 use super::ray::Ray;
 use super::vec3::Vec3;
@@ -10,7 +11,7 @@ pub struct Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, ray_tmin: &f64, ray_tmax: &f64, hit_record: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, ray_t: Interval, hit_record: &mut HitRecord) -> bool {
         let oc = self.center - ray.origin;
         let a = ray.direction.norm_squared();
         let h = Vec3::dot(&ray.direction, &oc);
@@ -25,9 +26,9 @@ impl Hittable for Sphere {
 
         // checks if either root satisfies the range requirement
         let mut root = (h - sqrtd) / a;
-        if root <= *ray_tmin || *ray_tmax <= root {
+        if !ray_t.surrounds(root) {
             root = (h + sqrtd) / a;
-            if root <= *ray_tmin || *ray_tmax <= root {
+            if !ray_t.surrounds(root) {
                 return false;
             }
         }
