@@ -27,6 +27,7 @@ impl HitRecord {
     }
 }
 
+#[derive(Default)]
 pub struct HittableList<'a, T: Hittable> {
     pub objects: Vec<&'a T>,
 }

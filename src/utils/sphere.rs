@@ -17,9 +17,10 @@ pub fn hit_sphere(center: &Point3, radius: &f64, ray: &Ray) -> f64 {
     }
 }
 
+#[derive(Default)]
 pub struct Sphere {
-    center: Point3,
-    radius: f64,
+    pub center: Point3,
+    pub radius: f64,
 }
 
 impl Hittable for Sphere {

@@ -1,7 +1,9 @@
 use crate::utils::{
     color::write_color,
+    hittable::HittableList,
     point3::Point3,
     ray::{ray_color, Ray},
+    sphere::Sphere,
     vec3::Vec3,
 };
 
@@ -15,6 +17,25 @@ pub fn run() {
     if image_height < 1 {
         image_height = 1;
     };
+
+    // World
+    let mut world = HittableList::default();
+    world.add(&Sphere {
+        center: Point3 {
+            x: 0.,
+            y: 0.,
+            z: -1.,
+        },
+        radius: 0.5,
+    });
+    world.add(&Sphere {
+        center: Point3 {
+            x: 0.,
+            y: -100.5,
+            z: -1.,
+        },
+        radius: 100.,
+    });
 
     let focal_length = 1.0;
     let viewport_height = 2.0;
@@ -65,7 +86,7 @@ pub fn run() {
                 direction: ray_direction,
             };
 
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             write_color(&pixel_color);
         }
     }
