@@ -1,8 +1,4 @@
-use super::{
-    point3::Point3,
-    ray::Ray,
-    vec3::{dot, Vec3},
-};
+use super::{point3::Point3, ray::Ray, vec3::Vec3};
 
 #[derive(Copy, Clone, Default)]
 pub struct HitRecord {
@@ -18,7 +14,7 @@ pub trait Hittable {
 
 impl HitRecord {
     pub fn set_face_normal(&mut self, ray: &Ray, outward_normal: &Vec3) {
-        self.front_face = dot(&ray.direction, &outward_normal) < 0.;
+        self.front_face = Vec3::dot(&ray.direction, &outward_normal) < 0.;
         self.normal = if self.front_face {
             *outward_normal
         } else {

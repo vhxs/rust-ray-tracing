@@ -4,7 +4,6 @@ use super::color::Color;
 use super::hittable::HitRecord;
 use super::hittable::Hittable;
 use super::point3::Point3;
-use super::vec3::unit_vector;
 use super::vec3::Vec3;
 
 pub struct Ray {
@@ -30,7 +29,7 @@ pub fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
             * 0.5;
     }
 
-    let unit_direction = unit_vector(&ray.direction);
+    let unit_direction = Vec3::unit_vector(&ray.direction);
     let a = unit_direction.y * 0.5 + 1.;
     return Color {
         x: 1.,

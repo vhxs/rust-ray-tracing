@@ -27,6 +27,14 @@ impl Vec3 {
     pub fn norm_squared(&self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
+
+    pub fn unit_vector(vector: &Vec3) -> Vec3 {
+        return *vector / vector.norm();
+    }
+
+    pub fn dot(vector1: &Vec3, vector2: &Vec3) -> f64 {
+        return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+    }
 }
 
 // this syntax is used to implement what are called "traits" in Rust
@@ -151,12 +159,4 @@ impl DivAssign for Vec3 {
         self.y /= rhs.y;
         self.z /= rhs.z;
     }
-}
-
-pub fn unit_vector(vector: &Vec3) -> Vec3 {
-    return *vector / vector.norm();
-}
-
-pub fn dot(vector1: &Vec3, vector2: &Vec3) -> f64 {
-    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
 }

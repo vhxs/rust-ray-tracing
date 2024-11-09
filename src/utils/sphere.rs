@@ -1,7 +1,7 @@
 use super::hittable::{HitRecord, Hittable};
 use super::point3::Point3;
 use super::ray::Ray;
-use super::vec3::dot;
+use super::vec3::Vec3;
 
 #[derive(Default)]
 pub struct Sphere {
@@ -13,7 +13,7 @@ impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, ray_tmin: &f64, ray_tmax: &f64, hit_record: &mut HitRecord) -> bool {
         let oc = self.center - ray.origin;
         let a = ray.direction.norm_squared();
-        let h = dot(&ray.direction, &oc);
+        let h = Vec3::dot(&ray.direction, &oc);
         let c = oc.norm_squared() - self.radius * self.radius;
 
         let discriminant = h * h - a * c;

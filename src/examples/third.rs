@@ -9,7 +9,6 @@ use crate::utils::{
 
 pub fn run() {
     // Image
-
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400;
 
