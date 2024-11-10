@@ -46,7 +46,7 @@ impl Vec3 {
         }
     }
 
-    fn random_unit_vector() -> Vec3 {
+    pub fn random_unit_vector() -> Vec3 {
         loop {
             let p = Self::random_vector(-1., 1.);
             let lensq = p.norm_squared();
