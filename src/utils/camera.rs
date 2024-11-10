@@ -7,10 +7,14 @@ use super::{
     vec3::Vec3,
 };
 
+use rand::Rng;
+
 pub struct Camera {
     pub aspect_ratio: f64,
     image_width: u32,
+    samples_per_pixel: u32,
     image_height: u32,
+    pixel_samples_scale: f64,
     center: Point3,
     pixel00_loc: Point3,
     pixel_delta_u: Vec3,
@@ -18,7 +22,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn initialize(aspect_ratio: f64, image_width: u32) -> Camera {
+    pub fn initialize(aspect_ratio: f64, image_width: u32, samples_per_pixel: u32) -> Camera {
         let mut image_height = (image_width as f64 / aspect_ratio) as u32;
         image_height = if image_height < 1 { 1 } else { image_height };
 
@@ -46,6 +50,7 @@ impl Camera {
         // Pixel deltas
         let pixel_delta_u = viewport_u / image_width as f64;
         let pixel_delta_v = viewport_v / image_height as f64;
+        let pixel_samples_scale = 1. / samples_per_pixel as f64;
 
         // Upper left pixel
         let viewport_upper_left = center
@@ -61,7 +66,9 @@ impl Camera {
         Camera {
             aspect_ratio,
             image_width,
+            samples_per_pixel,
             image_height,
+            pixel_samples_scale,
             center,
             pixel00_loc,
             pixel_delta_u,
@@ -99,6 +106,33 @@ impl Camera {
             } * a;
     }
 
+    fn get_ray(&self, i: u32, j: u32) -> Ray {
+        let offset = Self::sample_square();
+        let pixel_sample = self.pixel00_loc
+            + (self.pixel_delta_u * (i as f64 + offset.x))
+            + (self.pixel_delta_v * (j as f64 + offset.y));
+
+        let ray_origin = self.center;
+        let ray_direction = pixel_sample - ray_origin;
+
+        Ray {
+            origin: ray_origin,
+            direction: ray_direction,
+        }
+    }
+
+    fn sample_square() -> Vec3 {
+        let mut rng = rand::thread_rng();
+        let random_x = rng.gen::<f64>();
+        let random_y = rng.gen::<f64>();
+
+        Vec3 {
+            x: random_x - 0.5,
+            y: random_y - 0.5,
+            z: 0.,
+        }
+    }
+
     pub fn render(&self, world: &dyn Hittable) {
         print!(
             "P3\n{image_width} {image_height}\n255\n",
@@ -108,17 +142,26 @@ impl Camera {
 
         for j in 0..self.image_height {
             for i in 0..self.image_width {
-                let pixel_center = self.pixel00_loc
-                    + (self.pixel_delta_u * i as f64)
-                    + (self.pixel_delta_v * j as f64);
-                let ray_direction = pixel_center - self.center;
-                let r = Ray {
-                    origin: self.center,
-                    direction: ray_direction,
-                };
+                // let pixel_center = self.pixel00_loc
+                //     + (self.pixel_delta_u * i as f64)
+                //     + (self.pixel_delta_v * j as f64);
+                // let ray_direction = pixel_center - self.center;
+                // let r = Ray {
+                //     origin: self.center,
+                //     direction: ray_direction,
+                // };
 
-                let pixel_color = Camera::ray_color(&r, world);
-                write_color(&pixel_color);
+                let mut pixel_color = Color {
+                    x: 0.,
+                    y: 0.,
+                    z: 0.,
+                };
+                for _ in 0..self.samples_per_pixel {
+                    let ray = self.get_ray(i, j);
+                    pixel_color += Self::ray_color(&ray, world);
+                }
+
+                write_color(&(pixel_color * self.pixel_samples_scale));
             }
         }
     }

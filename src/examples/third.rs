@@ -20,7 +20,7 @@ pub fn run() {
         radius: 100.,
     });
 
-    let camera = Camera::initialize(16. / 9., 400);
+    let camera = Camera::initialize(16. / 9., 400, 10);
 
     camera.render(&world);
 }
