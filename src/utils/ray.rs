@@ -1,9 +1,5 @@
 use core::f64;
 
-use super::color::Color;
-use super::hittable::HitRecord;
-use super::hittable::Hittable;
-use super::interval::Interval;
 use super::point3::Point3;
 use super::vec3::Vec3;
 
@@ -16,34 +12,4 @@ impl Ray {
     pub fn at(&self, t: f64) -> Point3 {
         return self.origin + (self.direction * t);
     }
-}
-
-pub fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
-    let mut hit_record = HitRecord::default();
-    let interval = Interval {
-        min: 0.,
-        max: f64::INFINITY,
-    };
-    if world.hit(ray, interval, &mut hit_record) {
-        return (hit_record.normal
-            + Color {
-                x: 1.,
-                y: 1.,
-                z: 1.,
-            })
-            * 0.5;
-    }
-
-    let unit_direction = Vec3::unit_vector(&ray.direction);
-    let a = unit_direction.y * 0.5 + 1.;
-    return Color {
-        x: 1.,
-        y: 1.,
-        z: 1.,
-    } * (1. - a)
-        + Color {
-            x: 0.5,
-            y: 0.7,
-            z: 1.0,
-        } * a;
 }
