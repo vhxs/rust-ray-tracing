@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Copy, Clone, Default)]
@@ -30,6 +31,29 @@ impl Vec3 {
 
     pub fn unit_vector(vector: &Vec3) -> Vec3 {
         return *vector / vector.norm();
+    }
+
+    fn random_coordinate(min: f64, max: f64) -> f64 {
+        let mut rng = rand::thread_rng();
+        return rng.gen::<f64>() * (max - min) + min;
+    }
+
+    fn random_vector(min: f64, max: f64) -> Vec3 {
+        Vec3 {
+            x: Self::random_coordinate(min, max),
+            y: Self::random_coordinate(min, max),
+            z: Self::random_coordinate(min, max),
+        }
+    }
+
+    pub fn random_unit_vector() -> Vec3 {
+        loop {
+            let p = Self::random_vector(-1., 1.);
+            let lensq = p.norm_squared();
+            if lensq <= 1. {
+                return p / lensq.sqrt();
+            }
+        }
     }
 
     pub fn dot(vector1: &Vec3, vector2: &Vec3) -> f64 {
