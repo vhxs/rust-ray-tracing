@@ -46,13 +46,22 @@ impl Vec3 {
         }
     }
 
-    pub fn random_unit_vector() -> Vec3 {
+    fn random_unit_vector() -> Vec3 {
         loop {
             let p = Self::random_vector(-1., 1.);
             let lensq = p.norm_squared();
-            if lensq <= 1. {
+            if 1e-160 <= lensq && lensq <= 1. {
                 return p / lensq.sqrt();
             }
+        }
+    }
+
+    pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
+        let on_unit_sphere = Self::random_unit_vector();
+        if Self::dot(&on_unit_sphere, normal) > 0. {
+            return on_unit_sphere;
+        } else {
+            return -on_unit_sphere;
         }
     }
 
