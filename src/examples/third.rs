@@ -18,6 +18,9 @@ pub fn run() {
     let material_left = Dielectric {
         refraction_index: 1.5,
     };
+    let material_bubble = Dielectric {
+        refraction_index: 1. / 1.5,
+    };
     let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.);
 
     let sphere1 = Sphere {
@@ -40,6 +43,11 @@ pub fn run() {
         radius: 0.5,
         material: Some(&material_right),
     };
+    let sphere5 = Sphere {
+        center: Point3::new(-1., 0., -1.),
+        radius: 0.4,
+        material: Some(&material_bubble),
+    };
 
     // World
     let mut world = HittableList::default();
@@ -47,6 +55,7 @@ pub fn run() {
     world.add(&sphere2);
     world.add(&sphere3);
     world.add(&sphere4);
+    world.add(&sphere5);
 
     let camera = Camera::initialize(16. / 9., 400, 100, 50);
 

@@ -40,7 +40,7 @@ impl Vec3 {
         return *vector / vector.norm();
     }
 
-    fn random_coordinate(min: f64, max: f64) -> f64 {
+    pub fn random_coordinate(min: f64, max: f64) -> f64 {
         let mut rng = rand::thread_rng();
         return rng.gen::<f64>() * (max - min) + min;
     }

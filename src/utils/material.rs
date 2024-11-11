@@ -73,18 +73,6 @@ impl Material for Metal {
     }
 }
 
-// bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered)
-// const override {
-//     attenuation = color(1.0, 1.0, 1.0);
-//     double ri = rec.front_face ? (1.0/refraction_index) : refraction_index;
-
-//     vec3 unit_direction = unit_vector(r_in.direction());
-//     vec3 refracted = refract(unit_direction, rec.normal, ri);
-
-//     scattered = ray(rec.p, refracted);
-//     return true;
-// }
-
 pub struct Dielectric {
     pub refraction_index: f64,
 }
@@ -105,9 +93,28 @@ impl Material for Dielectric {
         };
 
         let unit_direction = Vec3::unit_vector(&ray_in.direction);
-        let refracted = Vec3::refract(&unit_direction, &hit_record.normal, ri);
 
-        *scattered = Ray::new(hit_record.p, refracted);
+        let cos_theta = f64::min(Vec3::dot(&-unit_direction, &hit_record.normal), 0.);
+        let sin_theta = (1. - cos_theta * cos_theta).sqrt();
+
+        let cannot_refract = ri * sin_theta > 1.;
+        let random_f64 = Vec3::random_coordinate(0., 1.);
+        let direction = if cannot_refract || Dielectric::reflectance(cos_theta, ri) > random_f64 {
+            Vec3::reflect(&unit_direction, &hit_record.normal)
+        } else {
+            Vec3::refract(&unit_direction, &hit_record.normal, ri)
+        };
+
+        *scattered = Ray::new(hit_record.p, direction);
         return true;
+    }
+}
+
+impl Dielectric {
+    pub fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
+        let mut r0 = (1. - refraction_index) / (1. + refraction_index);
+        r0 = r0 * r0;
+
+        return r0 + (1. - r0) * f64::powf(1. - cosine, 5.);
     }
 }
