@@ -220,3 +220,16 @@ impl DivAssign for Vec3 {
         self.z /= rhs.z;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::utils::vec3::Vec3;
+
+    #[test]
+    fn test_dot() {
+        assert_eq!(
+            Vec3::dot(&Vec3::new(1., 1., 1.), &Vec3::new(1., 1., 1.)),
+            3.
+        )
+    }
+}
