@@ -94,19 +94,23 @@ impl Camera {
 
         let mut hit_record = HitRecord::default();
         let interval = Interval {
-            min: 0.00001,
+            min: 0.001,
             max: f64::INFINITY,
         };
         if world.hit(ray, interval, &mut hit_record) {
-            let direction = hit_record.normal + Vec3::random_unit_vector();
-            return Self::ray_color(
-                &Ray {
-                    origin: hit_record.p,
-                    direction,
-                },
-                depth - 1,
-                world,
-            ) * 0.5;
+            let mut scattered = Ray::default();
+            let mut attenuation = Color::default();
+
+            if hit_record.material.unwrap().scatter(
+                ray,
+                &hit_record,
+                &mut attenuation,
+                &mut scattered,
+            ) {
+                return Self::ray_color(&scattered, depth - 1, world);
+            } else {
+                return Color::zero();
+            }
         }
 
         let unit_direction = Vec3::unit_vector(&ray.direction);

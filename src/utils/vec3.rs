@@ -29,6 +29,13 @@ impl Vec3 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
+    pub fn near_zero(&self) -> bool {
+        let small_value = 1e-8;
+        return self.x.abs() < small_value
+            && self.y.abs() < small_value
+            && self.z.abs() < small_value;
+    }
+
     pub fn unit_vector(vector: &Vec3) -> Vec3 {
         return *vector / vector.norm();
     }
@@ -67,6 +74,10 @@ impl Vec3 {
 
     pub fn dot(vector1: &Vec3, vector2: &Vec3) -> f64 {
         return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
+    }
+
+    pub fn reflect(vector: &Vec3, normal: &Vec3) -> Vec3 {
+        return *vector - *normal * Self::dot(vector, normal) * 2.;
     }
 }
 
