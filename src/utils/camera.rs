@@ -85,11 +85,7 @@ impl Camera {
 
     pub fn ray_color(ray: &Ray, depth: u32, world: &dyn Hittable) -> Color {
         if depth <= 0 {
-            return Color {
-                x: 0.,
-                y: 0.,
-                z: 0.,
-            };
+            return Color::zero();
         }
 
         let mut hit_record = HitRecord::default();
@@ -107,7 +103,7 @@ impl Camera {
                 &mut attenuation,
                 &mut scattered,
             ) {
-                return Self::ray_color(&scattered, depth - 1, world);
+                return Self::ray_color(&scattered, depth - 1, world) * attenuation;
             } else {
                 return Color::zero();
             }

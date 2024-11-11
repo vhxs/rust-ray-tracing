@@ -10,7 +10,7 @@ use crate::utils::{
 pub fn run() {
     // Materials
     let material_ground = Lambertian {
-        albedo: Color::color(0.8, 0.8, 0.),
+        albedo: Color::color(0.8, 0.0, 0.),
     };
     let material_center = Lambertian {
         albedo: Color::color(0.1, 0.2, 0.5),

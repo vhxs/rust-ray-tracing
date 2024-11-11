@@ -33,6 +33,7 @@ impl Material for Lambertian {
             direction: scatter_direction,
         };
         *attenuation = self.albedo.clone();
+
         return true;
     }
 }
