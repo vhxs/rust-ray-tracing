@@ -94,7 +94,7 @@ impl Material for Dielectric {
 
         let unit_direction = Vec3::unit_vector(&ray_in.direction);
 
-        let cos_theta = f64::min(Vec3::dot(&-unit_direction, &hit_record.normal), 0.);
+        let cos_theta = f64::min(Vec3::dot(&-unit_direction, &hit_record.normal), 1.);
         let sin_theta = (1. - cos_theta * cos_theta).sqrt();
 
         let cannot_refract = ri * sin_theta > 1.;

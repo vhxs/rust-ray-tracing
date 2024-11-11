@@ -76,6 +76,14 @@ impl Vec3 {
         return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
     }
 
+    pub fn cross(vector1: &Vec3, vector2: &Vec3) -> Vec3 {
+        return Vec3::new(
+            vector1.y * vector2.z - vector1.z * vector2.y,
+            vector1.z * vector2.x - vector1.x * vector2.z,
+            vector1.x * vector2.y - vector1.y * vector2.x,
+        );
+    }
+
     pub fn reflect(vector: &Vec3, normal: &Vec3) -> Vec3 {
         return *vector - *normal * Self::dot(vector, normal) * 2.;
     }

@@ -15,6 +15,10 @@ pub struct Camera {
     samples_per_pixel: u32,
     pub max_depth: u32,
     image_height: u32,
+    pub vfov: f64,
+    pub lookfrom: Point3,
+    pub lookat: Point3,
+    pub vup: Vec3,
     pixel_samples_scale: f64,
     center: Point3,
     pixel00_loc: Point3,
@@ -28,6 +32,10 @@ impl Camera {
         image_width: u32,
         samples_per_pixel: u32,
         max_depth: u32,
+        vfov: f64,
+        lookfrom: Point3,
+        lookat: Point3,
+        vup: Vec3,
     ) -> Camera {
         let mut image_height = (image_width as f64 / aspect_ratio) as u32;
         image_height = if image_height < 1 { 1 } else { image_height };
@@ -39,19 +47,20 @@ impl Camera {
         };
 
         // Viewport
-        let focal_length = 1.;
-        let viewport_height = 2.;
+        let focal_length = (lookfrom - lookat).norm();
+        let theta = Self::degrees_to_radians(vfov);
+        let h = f64::tan(theta / 2.);
+        let viewport_height = 2. * h * focal_length;
         let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
-        let viewport_u = Vec3 {
-            x: viewport_width,
-            y: 0.,
-            z: 0.,
-        };
-        let viewport_v = Vec3 {
-            x: 0.,
-            y: -viewport_height,
-            z: 0.,
-        };
+
+        // basis
+        let w = Vec3::unit_vector(&(lookfrom - lookat));
+        let u = Vec3::unit_vector(&Vec3::cross(&vup, &w));
+        let v = Vec3::cross(&w, &u);
+
+        // viewport cont
+        let viewport_u = u * viewport_width;
+        let viewport_v = -v * viewport_height;
 
         // Pixel deltas
         let pixel_delta_u = viewport_u / image_width as f64;
@@ -59,14 +68,7 @@ impl Camera {
         let pixel_samples_scale = 1. / samples_per_pixel as f64;
 
         // Upper left pixel
-        let viewport_upper_left = center
-            - Vec3 {
-                x: 0.,
-                y: 0.,
-                z: focal_length,
-            }
-            - viewport_u / 2.
-            - viewport_v / 2.;
+        let viewport_upper_left = center - w * focal_length - viewport_u / 2. - viewport_v / 2.;
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5;
 
         Camera {
@@ -74,6 +76,10 @@ impl Camera {
             image_width,
             samples_per_pixel,
             max_depth,
+            vfov,
+            lookfrom,
+            lookat,
+            vup,
             image_height,
             pixel_samples_scale,
             center,
@@ -148,6 +154,10 @@ impl Camera {
             y: random_y - 0.5,
             z: 0.,
         }
+    }
+
+    fn degrees_to_radians(degrees: f64) -> f64 {
+        degrees * std::f64::consts::PI / 180.
     }
 
     pub fn render(&self, world: &dyn Hittable) {

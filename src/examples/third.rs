@@ -5,12 +5,13 @@ use crate::utils::{
     material::{Dielectric, Lambertian, Metal},
     point3::Point3,
     sphere::Sphere,
+    vec3::Vec3,
 };
 
 pub fn run() {
     // Materials
     let material_ground = Lambertian {
-        albedo: Color::new(0.8, 0.0, 0.),
+        albedo: Color::new(0.8, 0.8, 0.),
     };
     let material_center = Lambertian {
         albedo: Color::new(0.1, 0.2, 0.5),
@@ -57,7 +58,16 @@ pub fn run() {
     world.add(&sphere4);
     world.add(&sphere5);
 
-    let camera = Camera::initialize(16. / 9., 400, 100, 50);
+    let camera = Camera::initialize(
+        16. / 9.,
+        400,
+        100,
+        50,
+        20.,
+        Point3::new(-2., 2., 1.),
+        Point3::new(0., 0., -1.),
+        Vec3::new(0., 1., 0.),
+    );
 
     camera.render(&world);
 }
