@@ -4,12 +4,6 @@ use super::vec3::Vec3;
 
 pub type Color = Vec3;
 
-impl Color {
-    pub fn color(x: f64, y: f64, z: f64) -> Self {
-        Color { x, y, z }
-    }
-}
-
 fn linear_to_gamma(linear_component: f64) -> f64 {
     if linear_component > 0. {
         return linear_component.sqrt();

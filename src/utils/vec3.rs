@@ -79,6 +79,14 @@ impl Vec3 {
     pub fn reflect(vector: &Vec3, normal: &Vec3) -> Vec3 {
         return *vector - *normal * Self::dot(vector, normal) * 2.;
     }
+
+    pub fn refract(uv: &Vec3, normal: &Vec3, etai_over_etat: f64) -> Vec3 {
+        let cos_theta = f64::min(Vec3::dot(&-*uv, normal), 1.0);
+        let r_out_perp = (*uv + *normal * cos_theta) * etai_over_etat;
+        let r_out_parallel = *normal * -(1. - r_out_perp.norm_squared()).abs().sqrt();
+
+        return r_out_perp + r_out_parallel;
+    }
 }
 
 // this syntax is used to implement what are called "traits" in Rust
